@@ -9,6 +9,21 @@ const session=require('express-session');
 const cookieParser=require('cookie-parser')
 
 
+
+//upload images
+// const multer = require('multer')
+// const path = require('path')
+// const storage = multer.diskStorage({
+//     destination:(req,file,cb)=>{
+//        cb(null,'images') 
+//     },
+//     filename:(req,file,cb)=>{
+//       console.log(file)  
+//       cd(null,Date.now()+ path.extname(file.originalname))
+//     }
+// });
+// const upload=multer({storage:storage})
+
 app.use(express.json());
 app.use(express.static(__dirname));
 app.use(cors({
@@ -46,8 +61,11 @@ app.post('/signup',(req,res)=>{
         console.log(err)
     }
      db.query("INSERT INTO users (name,email,password) VALUES(?,?,?)",[name,email,hash],(err,result)=>{
+        
+     
         console.log(err);
     })
+   
    })
    
 })
@@ -92,20 +110,23 @@ app.post('/login',(req,res)=>{
     }) 
 })
 
-
+// adding product
 
 app.post('/add',(req,res)=>{
     const product_name=req.body.product_name
     const product_description=req.body.product_description
     const product_image=req.body.product_image
+    const product_price=req.body.product_price
     const user_id=req.body.user_id
 
-    const InsertQuery="INSERT INTO products (product_name,product_description,product_image,user_id) VALUES (?,?,?,?)"
-    db.query(InsertQuery,[product_name,product_description,product_image,user_id],(err,result)=>{
+    const InsertQuery="INSERT INTO products (product_name,product_description,product_image,product_price,user_id) VALUES (?,?,?,?,?)"
+    db.query(InsertQuery,[product_name,product_description,product_image,product_price,user_id],(err,result)=>{
       console.log(result);
     })
 })
 
+
+// select products 
 app.get('/api/get',(req,res)=>{
 const SelectQuery="SELECT * FROM products";
     db.query(SelectQuery,(err,result)=>{
@@ -135,14 +156,20 @@ app.put('/api/edit/:id',(req,res)=>{
     const id=req.params.id
     const product_name=req.body.product_name
     const product_description=req.body.product_description
+    const product_price=req.body.product_price
     const product_image=req.body.product_image
-    const updateQuery="UPDATE products SET product_name=?,product_description=?,product_image=? WHERE id=? ";
-    db.query(updateQuery,[product_name,product_description,product_image,id],(err,result)=>{
+    const updateQuery="UPDATE products SET product_name=?,product_description=?,product_price=?,product_image=? WHERE id=? ";
+    db.query(updateQuery,[product_name,product_description,product_price,product_image,id],(err,result)=>{
         if(err){
         console.log(err)}
     })
   
 })
+
+
+
+
+
 app.listen(3001,()=>{
     console.log('running');
 });
