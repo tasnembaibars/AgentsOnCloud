@@ -3,6 +3,8 @@ import React,{useEffect,useState} from 'react'
 import {  useParams } from 'react-router-dom'
 import axios from 'axios';
 import {NavLink} from 'react-router-dom'
+import {useNavigate} from 'react-router-dom'
+import swal from 'sweetalert'
 function Single() {
     const { id } = useParams();
     const[single,setSingle]=useState([])
@@ -14,6 +16,36 @@ useEffect(()=>{
 },[])
 console.log('s',single)
 
+const[comment,setComment]=useState('')
+const user =localStorage.getItem('user');
+const[user_id,setUserId]=useState(user)
+const[product_id,setProductId]=useState(id)
+const navigate=useNavigate()
+const handleClick=(e)=>{
+    e.preventDefault()
+    axios.post("http://localhost:3001/comment",{comment:comment,product_id:product_id,user_id:user_id})
+    .then((response)=>{
+    console.log(response)
+    })
+    swal({
+      title: "Good job!",
+      text: " comment added successfully!",
+      icon: "success",
+      button: "ok!",
+    })
+    .then(()=> {
+      navigate('/all');
+  });
+}
+const[comments,setComments]=useState([])
+useEffect(()=>{
+    
+    axios.get("http://localhost:3001/api/comment")
+    .then((response)=>{
+        setComments(response.data)
+    })
+},[])
+console.log('com',comments)
   return (
     <div>
       
@@ -50,10 +82,48 @@ console.log('s',single)
     
                         </div>
                     </div>
-                    <div class="wishlist-buttons">
-                        {/* <a href="#" class="btn btn-grey">clear Wishlist</a> */}
+                    <form>
+                            <h3>Add comment</h3>
+                          
+                            <div class="box-field__row">
+                                <div class="box-field"><input type="text" class="form-control"
+                                        placeholder="Enter your name" name='comment'  onChange={(e)=>{setComment(e.target.value)}}/></div>
+      
+                            </div>
+                          
+                                    <button class="btn btn-grey" style={{marginTop:"3%",marginBottom:"3%"}}
+                                type="submit" onClick={handleClick}>Add</button>
+                          
+                        </form>
+                      {comments.map((comment)=>{
+
+                              return(
+                                <>
+                               
+                                <article class="comment">
+		<a class="comment-img" href="#non">
+		<img src="../avatar.png" alt="" width="50" height="50"/>
+		</a>
+			
+		<div class="comment-body">
+			<div class="text">
+			  <p>{comment.comment}</p>
+			</div>
+		<p class="attribution">by <a href="#non">Joe Bloggs</a> at 2:23pm, 4th Dec 2012</p>
+		</div>
+	</article>
+                                
+                                </>
+                        
+                        )
+                    })}
+                    {/* <div class="wishlist-buttons">
+                       
+                       <button className="btn btn-grey" onClick={handleClick}>Add comment</button></div> */}
+                    {/* <div class="wishlist-buttons">
+                       
                         <NavLink class="btn"
-                            to={"/all"} className="btn btn-grey">go shopping</NavLink></div>
+                            to={"/all"} className="btn btn-grey">go shopping</NavLink></div> */}
                 </div><img class="promo-video__decor js-img" data-src="/assets/img/promo-video__decor.jpg" alt="" />
             </div>
        

@@ -166,8 +166,24 @@ app.put('/api/edit/:id',(req,res)=>{
   
 })
 
+// add comments
+app.post('/comment',(req,res)=>{   
+     const comment=req.body.comment
+    const product_id=req.body.product_id
+    const user_id=req.body.user_id
 
-
+    const InsertQuery="INSERT INTO  comment (comment,product_id,user_id) VALUES (?,?,?)"
+    db.query(InsertQuery,[comment,product_id,user_id],(err,result)=>{
+      console.log(result);
+    })
+})
+// select comments
+app.get('/api/comment',(req,res)=>{
+    const SelectQuery="SELECT * FROM comment";
+        db.query(SelectQuery,(err,result)=>{
+          res.send(result);
+        })
+    })
 
 
 app.listen(3001,()=>{
